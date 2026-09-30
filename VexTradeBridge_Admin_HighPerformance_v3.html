@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070707">
+<title>VexTradeBridge – Elektronik</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+ --bg:#050505;--panel:#0d0d0f;--panel2:#151518;--text:#f7f7f7;--muted:#9b9ba3;
+ --red:#e50914;--red2:#ff2530;--line:#29292f;--green:#2fbf71;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#250407 0,#080808 35%,#050505 75%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.wrap{max-width:1280px;margin:auto;padding:0 20px}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;background:rgba(5,5,5,.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+.logo{font-size:25px;font-weight:950;letter-spacing:-.7px}.logo span{color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.nav{display:flex;gap:0;overflow:auto;border-bottom:1px solid #2a0a0d;background:#070708}.nav button{flex:1;min-width:105px;border:0;border-bottom:3px solid transparent;background:transparent;color:#eee;padding:15px 12px;font-weight:800}.nav button:hover,.nav button.active{color:#fff;border-bottom-color:var(--red)}
+.brandmark{display:flex;align-items:center;gap:9px}.brandmark .mark{font-size:34px;font-weight:1000;color:#ff1823;line-height:1}.brandmark .logo{font-size:25px}
+.btn{border:1px solid var(--red);border-radius:10px;padding:10px 14px;background:var(--red);color:#fff;font-weight:850}.btn:hover{background:var(--red2)}
+.btn.ghost{background:#151519;border-color:#33333b}.btn.ghost:hover{border-color:var(--red)}
+.hero{position:relative;min-height:330px;margin:0 0 28px;padding:58px 56px 44px;border:1px solid #2b2b30;border-top:0;border-radius:0 0 10px 10px;overflow:hidden;background:#050607 url("./hero-overlay.png") center/cover no-repeat;box-shadow:0 12px 45px rgba(0,0,0,.35)}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.52) 38%,rgba(0,0,0,.08) 75%);pointer-events:none}.hero>*{position:relative;z-index:1}.eyebrow{color:#ff6a70;font-weight:900;text-transform:uppercase;letter-spacing:2px;font-size:12px}
+.hero h1{font-size:clamp(42px,6vw,68px);line-height:.96;letter-spacing:-3px;margin:10px 0 16px;max-width:600px}.hero h1 span{color:#ff202b}
+.hero h1 span{color:var(--red)}.hero p{color:#e7e7ea;font-size:18px;max-width:620px;line-height:1.5;margin-bottom:22px}
+.searchbar{display:flex;gap:10px;margin:22px 0 8px;max-width:680px}.hero .searchbar input{background:rgba(7,8,10,.84);border-color:#5b5c63}.searchbar input{flex:1}
+input,textarea,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#101014;color:#fff;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red)}
+.sectionhead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:28px 0 12px}.sectionhead h2{margin:0;font-size:25px}
+.muted{color:var(--muted);font-size:13px}
+.categories{display:grid;grid-template-columns:repeat(9,1fr);gap:12px;margin:15px 0 30px}
+.catbtn{min-height:88px;text-align:left;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#111116,#0b0b0d);color:#fff;font-weight:850}
+.catbtn:hover{border-color:#8c1017}.catbtn.active{border-color:var(--red);background:linear-gradient(180deg,#35080c,#170507);box-shadow:0 0 0 1px rgba(229,9,20,.18)}
+.catbtn small{display:block;color:var(--muted);font-weight:600;margin-top:5px}.catbtn.active small{color:#ff9da2}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.card{background:linear-gradient(180deg,#111114,#0b0b0d);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.18s transform,.18s border-color}
+.card:hover{transform:translateY(-2px);border-color:#4a4a52}.pic{height:230px;background:radial-gradient(circle at 50% 35%,#19191d 0,#08080a 65%);display:flex;align-items:center;justify-content:center;overflow:hidden}.pic img{mix-blend-mode:normal}
+.pic img{width:100%;height:100%;object-fit:contain;padding:10px}.noimg{color:#62626a;font-weight:700}
+.body{padding:15px}.cat{font-size:11px;color:#ff626a;text-transform:uppercase;font-weight:900;letter-spacing:.7px}.name{font-size:18px;font-weight:900;margin:7px 0}.desc{color:var(--muted);font-size:13px;line-height:1.45;min-height:38px}.price{font-size:22px;font-weight:950;margin:13px 0}.old{text-decoration:line-through;color:#65656d;font-size:13px;margin-left:7px}.stock{color:var(--muted);font-size:12px;margin-bottom:9px}
+.cardBtns{display:grid;grid-template-columns:1fr auto;gap:8px}.cardBtns .btn{width:100%}
+.notice{padding:13px;border:1px solid var(--line);border-radius:11px;background:#111116;color:#cfcfd5;margin:12px 0}.error{border-color:#7e171d;color:#ffb8bc}.success{border-color:#21794a;color:#a9f0c7}
+.drawer,.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:none}.drawer.open,.modal.open{display:block}
+.drawerbox{position:absolute;right:0;top:0;height:100%;width:min(500px,100%);background:#0b0b0d;border-left:1px solid var(--line);padding:22px;overflow:auto}
+.modalbox{width:min(1000px,94vw);max-height:92vh;overflow:auto;margin:4vh auto;background:#0b0b0d;border:1px solid var(--line);border-radius:18px;padding:22px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:13px;color:#c8c8ce;font-weight:750}
+.cartitem{padding:14px 0;border-bottom:1px solid var(--line)}.qty{display:flex;align-items:center;gap:7px}.qty button{border:1px solid #333;border-radius:8px;background:#151519;color:#fff;padding:6px 10px}
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:25px}.detailImg{height:430px;background:#070709;border-radius:14px;overflow:hidden}.detailImg img{width:100%;height:100%;object-fit:contain}.detail h2{font-size:34px;margin:5px 0 12px}.detailPrice{font-size:30px;font-weight:950;margin:18px 0}.detailText{color:#b6b6bd;line-height:1.65;white-space:pre-line}.galleryMain{height:430px;background:#070709;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}.galleryMain img{width:100%;height:100%;object-fit:contain}.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.thumb{width:68px;height:68px;padding:3px;background:#09090b;border:1px solid #25252c;border-radius:10px;cursor:pointer}.thumb.active{border-color:var(--red)}.thumb img{width:100%;height:100%;object-fit:contain;border-radius:7px}
+.adminGrid{display:grid;grid-template-columns:1fr 1.4fr;gap:20px}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.footer{padding:50px 0 35px;color:#66666e;text-align:center;font-size:12px}.adminToolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}.imageAdminGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}.imageAdminItem{background:#09090b;border:1px solid #25252c;border-radius:10px;padding:8px}.imageAdminItem.active{border-color:var(--red)}.imageAdminItem>img{width:100%;height:120px;object-fit:contain;background:#111;border-radius:7px}.imageAdminItem button{font-size:12px;padding:6px 8px}
+
+/* VTB PREMIUM VISUAL UPGRADE */
+body{
+  background:
+    radial-gradient(900px 420px at 50% -80px,rgba(229,9,20,.20),transparent 68%),
+    radial-gradient(700px 500px at 100% 35%,rgba(120,0,8,.10),transparent 70%),
+    #050505;
+}
+.top{
+  padding:12px 0;
+  background:rgba(4,4,5,.78);
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+.brandmark .mark{
+  text-shadow:0 0 22px rgba(255,24,35,.55);
+}
+.nav{
+  border:1px solid #211014;
+  border-top:0;
+  background:linear-gradient(180deg,#0b090a,#070707);
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  scrollbar-width:none;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav button{
+  position:relative;
+  transition:.18s;
+  white-space:nowrap;
+}
+.nav button:hover{
+  background:linear-gradient(180deg,rgba(229,9,20,.12),transparent);
+}
+.hero{
+  min-height:430px;
+  margin-bottom:42px;
+  padding:72px 64px 52px;
+  border:1px solid #3a161a;
+  border-top:1px solid #4b171c;
+  border-radius:0 0 22px 22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.04);
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:auto -10% -55% 35%;
+  height:300px;
+  background:radial-gradient(circle,rgba(229,9,20,.22),transparent 65%);
+  pointer-events:none;
+}
+.hero h1{
+  font-size:clamp(48px,6.5vw,82px);
+  max-width:720px;
+  text-shadow:0 8px 30px rgba(0,0,0,.55);
+}
+.hero p{
+  font-size:19px;
+  max-width:650px;
+}
+.hero .btn{
+  padding:13px 22px;
+  border-radius:11px;
+  box-shadow:0 10px 28px rgba(229,9,20,.22);
+}
+.searchbar input{
+  border-radius:12px;
+  background:rgba(8,8,10,.78);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+}
+.sectionhead h2{
+  font-size:28px;
+  letter-spacing:-.5px;
+}
+.categories{
+  gap:13px;
+  margin-top:18px;
+}
+.catbtn{
+  position:relative;
+  min-height:102px;
+  padding:17px 16px;
+  border-radius:15px;
+  background:
+    radial-gradient(circle at 90% 0,rgba(229,9,20,.10),transparent 45%),
+    linear-gradient(145deg,#151519,#09090b);
+  box-shadow:0 10px 25px rgba(0,0,0,.22);
+  transition:.2s transform,.2s border-color,.2s box-shadow;
+}
+.catbtn:before{
+  content:"";
+  position:absolute;
+  left:0;top:18px;bottom:18px;
+  width:3px;
+  border-radius:4px;
+  background:#2a2a30;
+  transition:.2s;
+}
+.catbtn:hover{
+  transform:translateY(-3px);
+  border-color:#8e151c;
+  box-shadow:0 14px 35px rgba(0,0,0,.35),0 0 22px rgba(229,9,20,.07);
+}
+.catbtn:hover:before,.catbtn.active:before{background:var(--red)}
+.catbtn.active{
+  transform:translateY(-2px);
+  background:
+    radial-gradient(circle at 100% 0,rgba(229,9,20,.20),transparent 50%),
+    linear-gradient(145deg,#35080c,#110607);
+  box-shadow:0 14px 35px rgba(0,0,0,.4),0 0 25px rgba(229,9,20,.10);
+}
+.grid{gap:18px}
+.card{
+  position:relative;
+  background:
+    radial-gradient(circle at 50% -20%,rgba(255,255,255,.035),transparent 48%),
+    linear-gradient(180deg,#141418,#0a0a0c);
+  border-color:#24242b;
+  box-shadow:0 12px 28px rgba(0,0,0,.25);
+  transition:.22s transform,.22s border-color,.22s box-shadow;
+}
+.card:hover{
+  transform:translateY(-5px);
+  border-color:#671118;
+  box-shadow:0 20px 45px rgba(0,0,0,.42),0 0 28px rgba(229,9,20,.07);
+}
+.pic{
+  height:250px;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(229,9,20,.10),transparent 30%),
+    radial-gradient(circle at 50% 30%,#24242a 0,#0b0b0d 62%);
+}
+.pic img{
+  padding:6px;
+  transition:.25s transform;
+}
+.card:hover .pic img{transform:scale(1.035)}
+.body{padding:17px}
+.name{font-size:19px;letter-spacing:-.2px}
+.price{font-size:24px}
+.cardBtns .btn{
+  box-shadow:0 7px 20px rgba(229,9,20,.12);
+}
+
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}.categories{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){
+.hero{background-position:58% center;padding:48px 24px 32px}.hero h1{font-size:46px;letter-spacing:-2px}.categories{grid-template-columns:repeat(2,1fr)}.catbtn{min-height:92px}.grid{gap:12px}.wrap{padding:0 14px}.top{align-items:flex-start}.hero{min-height:300px;padding:44px 24px 28px;margin-left:-14px;margin-right:-14px;border-radius:0}.hero h1{letter-spacing:-2px}.grid{grid-template-columns:repeat(2,1fr);gap:10px}.categories{grid-template-columns:repeat(2,1fr)}.pic{height:170px}.detail,.adminGrid{grid-template-columns:1fr}.detailImg{height:300px}.cardBtns{grid-template-columns:1fr}.searchbar{flex-direction:column}}
+@media(max-width:430px){.grid{grid-template-columns:1fr}.categories{grid-template-columns:1fr 1fr}.pic{height:210px}}
+.payopts{display:grid;gap:10px}.payopt{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border:1px solid #303030;border-radius:12px;background:#111;cursor:pointer}.payopt:has(input:checked){border-color:#e11;box-shadow:0 0 0 1px #e11 inset}.payopt input{margin-top:3px;accent-color:#e11}.payopt span{display:flex;flex-direction:column;gap:3px}.payopt small{color:#999;font-weight:400}.payopt b{font-weight:700}
+ .adminStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brandmark"><div class="mark">V</div><div class="logo">Vex<span>Trade</span>Bridge</div></div>
+  <div class="actions">
+    <button class="btn ghost" type="button" onclick="openAdmin()">Mein Konto</button>
+    <button class="btn" type="button" onclick="openCart()">🛒 Warenkorb (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+<nav class="nav" id="topNav"></nav>
+
+<section class="hero">
+  <div class="eyebrow">VEXTRADEBRIDGE</div>
+  <h1>Deine Technik.<br><span>Unsere Leidenschaft.</span></h1>
+  <p>Top Marken. Beste Preise. Schnell bei dir.</p>
+  <div class="searchbar">
+    <input id="search" type="search" placeholder="Produkt suchen …" oninput="setSearch(this.value)">
+    <button class="btn" type="button" onclick="document.getElementById('categorySection').scrollIntoView({behavior:'smooth'})">Jetzt entdecken</button><button class="btn ghost" type="button" onclick="clearSearch()">Zurücksetzen</button>
+  </div>
+</section>
+
+<section id="categorySection">
+  <div class="sectionhead"><h2>Kategorien</h2><div class="muted" id="resultInfo"></div></div>
+  <div id="categories" class="categories"></div>
+</section>
+
+<section>
+  <div class="sectionhead"><h2 id="productTitle">Alle Produkte</h2></div>
+  <main id="products" class="grid"></main>
+  <div id="shopNotice"></div>
+</section>
+
+<footer class="footer">© <span id="year"></span> VexTradeBridge</footer>
+</div>
+
+<div id="cart" class="drawer">
+ <div class="drawerbox">
+  <div class="row"><h2>Warenkorb</h2><button class="btn ghost" type="button" onclick="closeCart()">×</button></div>
+  <div id="cartItems"></div>
+  <div class="row" style="margin-top:20px"><strong>Gesamt</strong><strong id="cartTotal">0,00 €</strong></div>
+  <button class="btn" style="width:100%;margin-top:15px" type="button" onclick="openCheckout()">Zur Kasse</button>
+ </div>
+</div>
+
+<div id="productModal" class="modal">
+ <div class="modalbox">
+  <div class="row"><span class="muted">Produktdetails</span><button class="btn ghost" type="button" onclick="closeProduct()">×</button></div>
+  <div id="productDetail"></div>
+ </div>
+</div>
+
+<div id="checkout" class="modal">
+ <div class="modalbox">
+  <div class="row"><h2>Bestellung</h2><button class="btn ghost" type="button" onclick="closeCheckout()">×</button></div>
+  <div id="paymentInfo" class="notice"></div>
+  <div class="field"><label>Zahlungsart</label>
+   <div class="payopts">
+    <label class="payopt"><input type="radio" name="paymethod" value="bank_transfer" checked onchange="updatePaymentUI()"><span>🏦 <b>Banküberweisung / Echtzeitüberweisung</b><small>Direkt auf das hinterlegte Bankkonto</small></span></label>
+    <label class="payopt"><input type="radio" name="paymethod" value="card" onchange="updatePaymentUI()"><span>💳 <b>Kreditkarte / Debitkarte</b><small>Visa, Mastercard und unterstützte Karten</small></span></label>
+   </div>
+  </div>
+  <div class="field"><label>Name</label><input id="cName"></div>
+  <div class="field"><label>E-Mail</label><input id="cEmail" type="email"></div>
+  <div class="field"><label>Lieferadresse</label><textarea id="cAddress" rows="3"></textarea></div>
+  <div class="field"><label>Notiz (optional)</label><textarea id="cNote" rows="2"></textarea></div>
+  <button class="btn" style="width:100%" type="button" onclick="placeOrder()">Kostenpflichtig bestellen</button>
+  <div id="checkoutMsg"></div>
+ </div>
+</div>
+
+<div id="admin" class="modal">
+ <div class="modalbox">
+  <div class="row"><h2>VexTradeBridge Admin</h2><button class="btn ghost" type="button" onclick="closeAdmin()">×</button></div>
+  <div id="adminContent"></div>
+ </div>
+</div>
+
+<div id="resetPassword" class="modal">
+ <div class="modalbox">
+  <div class="row"><h2>Passwort zurücksetzen</h2></div>
+  <p class="muted">Lege hier dein neues Admin-Passwort fest.</p>
+  <div class="field"><label>Neues Passwort</label><input id="newPass" type="password" minlength="8" autocomplete="new-password"></div>
+  <div class="field"><label>Passwort wiederholen</label><input id="newPass2" type="password" minlength="8" autocomplete="new-password"></div>
+  <button class="btn" type="button" onclick="saveNewPassword()">Neues Passwort speichern</button>
+  <div id="resetMsg"></div>
+ </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://zhfiqjqvfviqvfqqrvsx.supabase.co';
+const SUPABASE_KEY='sb_publishable_yuORjifIMOyRjQq5UGi8MA_txTyLI-z';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const CATEGORIES=[
+ {label:'Konsolen',keys:['konsole','konsolen','console','consoles','playstation','ps5','ps4','xbox','switch','nintendo']},
+ {label:'Grafikkarten',keys:['grafikkarte','grafikkarten','gpu','gpus','graphics card','graphics cards','rtx','gtx','radeon','geforce']},
+ {label:'PC Hardware',keys:['pc hardware','hardware','gpu','cpu','grafikkarte','graphics card','prozessor','komponenten','component','components','ram','ssd','nvme','mainboard','motherboard']},
+ {label:'PC',keys:['pc','gaming pc','computer','desktop','gaming computer']},
+ {label:'Zubehör',keys:['zubehör','zubehoer','accessories','gaming accessories','headset','keyboard','tastatur','maus','mouse','controller','cable','kabel']},
+ {label:'Handys',keys:['handy','handys','smartphone','smartphones','phone','phones','mobiltelefon','iphone','galaxy']},
+ {label:'Tablet',keys:['tablet','tablets','ipad']},
+ {label:'Laptop',keys:['laptop','laptops','notebook','notebooks']},
+ {label:'Fernseher',keys:['fernseher','fernsehern','tv','television','televisions']},
+ {label:'Monitore',keys:['monitor','monitore','monitors','display','displays','ultrawide']}
+];
+
+let products=[],images=[],settings={},category='Alle',searchText='';
+let cart=JSON.parse(localStorage.getItem('vtb_cart')||'{}');
+
+const euro=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(n||0));
+const norm=v=>String(v||'').toLowerCase().trim().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+const esc=x=>String(x??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+function categoryForProduct(p){
+ const raw=norm(p.category),name=norm(p.name);
+ for(const c of CATEGORIES) if(c.keys.some(k=>norm(k)===raw)) return c.label;
+ for(const c of CATEGORIES) if(c.keys.some(k=>raw.includes(norm(k))||name.includes(norm(k)))) return c.label;
+ return 'Zubehör';
+}
+
+function imageFor(p){
+ const db=images.filter(i=>i.product_id===p.id&&i.image_url).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0))[0]?.image_url;
+ return db||p.image_url||'';
+}
+function fallbackImg(name,cat){
+ const safeName=String(name||'Produkt').slice(0,42); const safeCat=String(cat||'Produkt').slice(0,24);
+ const svg=`<svg xmlns=\"http://www.w3.org/2000/svg\" width=800 height=600 viewBox=\"0 0 800 600\"><rect width=800 height=600 fill=\"#0b0b0f\"/><rect x=35 y=35 width=730 height=530 rx=28 fill=\"#121218\" stroke=\"#e31b23\" stroke-width=3/><circle cx=400 cy=245 r=92 fill=\"#e31b23\" opacity=\".14\"/><rect x=325 y=170 width=150 height=150 rx=22 fill=\"#1c1c25\" stroke=\"#e31b23\" stroke-width=4/><path d=\"M365 225h70v50h-70z\" fill=\"#e31b23\" opacity=\".85\"/><text x=400 y=385 text-anchor=\"middle\" fill=\"#e31b23\" font-family=\"Arial,sans-serif\" font-size=24 font-weight=700>${esc(safeCat)}</text><text x=400 y=430 text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial,sans-serif\" font-size=22>${esc(safeName)}</text></svg>`;
+ return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
+function imgSrc(u){if(!u)return ''; return String(u)}
+function imgAttrs(u,alt='',cat='Produkt'){
+ const raw=String(u||''); const fallback=fallbackImg(alt,cat);
+ const proxy=raw?'https://images.weserv.nl/?url='+encodeURIComponent(raw):'';
+ const first=raw||fallback;
+ return `src="${esc(first)}" alt="${esc(alt)}" data-original="${esc(raw)}" data-proxy="${esc(proxy)}" onerror="if(this.dataset.proxy && this.src!==this.dataset.proxy){this.src=this.dataset.proxy;return}this.onerror=null;this.src='${fallback}';this.style.display='block';"`;
+}
+function renderTopNav(){document.getElementById('topNav').innerHTML=['Alle',...CATEGORIES.map(c=>c.label)].map(c=>`<button type="button" class="${c===category?'active':''}" onclick="selectCategory('${esc(c)}')">${esc(c)}</button>`).join('')}
+function filteredProducts(){
+ const q=norm(searchText);
+ return products.filter(p=>(category==='Alle'||categoryForProduct(p)===category)&&(!q||norm(p.name).includes(q)||norm(p.description).includes(q)||norm(categoryForProduct(p)).includes(q)));
+}
+async function load(){
+ document.getElementById('shopNotice').innerHTML='<div class="notice">Shop wird geladen …</div>';
+ const [{data:p,error:pe},{data:i,error:ie},{data:s,error:se}]=await Promise.all([
+  sb.from('products').select('*').eq('active',true).order('created_at',{ascending:false}),
+  sb.from('product_images').select('*').order('sort_order'),
+  sb.from('store_settings').select('*').limit(1)
+ ]);
+ if(pe){document.getElementById('shopNotice').innerHTML='<div class="notice error">Produkte konnten nicht geladen werden: '+esc(pe.message)+'</div>';return}
+ products=p||[];images=i||[];settings=(s&&s[0])||{};
+ document.getElementById('shopNotice').innerHTML='';
+ render();renderCart();
+}
+function renderCategories(){
+ const counts={};products.forEach(p=>counts[categoryForProduct(p)]=(counts[categoryForProduct(p)]||0)+1);
+ document.getElementById('categories').innerHTML=['Alle',...CATEGORIES.map(c=>c.label)].map(c=>{
+  const count=c==='Alle'?products.length:(counts[c]||0);
+  return `<button type="button" class="catbtn ${c===category?'active':''}" onclick="selectCategory('${esc(c)}')">${esc(c)}<small>${count} Produkt${count===1?'':'e'}</small></button>`;
+ }).join('');
+}
+function render(){
+ renderTopNav();
+ renderCategories();
+ const list=filteredProducts();
+ document.getElementById('productTitle').textContent=category==='Alle'?'Alle Produkte':category;
+ document.getElementById('resultInfo').textContent=list.length+' Produkt'+(list.length===1?'':'e');
+ document.getElementById('products').innerHTML=list.map(p=>{
+  const src=imageFor(p),cat=categoryForProduct(p),stock=Number(p.stock||0);
+  return `<article class="card">
+   <div class="pic"><img ${imgAttrs(src,p.name,cat)} loading="lazy"></div>
+   <div class="body">
+    <div class="cat">${esc(cat)}</div><div class="name">${esc(p.name)}</div>
+    <div class="desc">${esc(p.description||'')}</div>
+    <div class="price">${euro(p.price)} ${p.compare_at_price?`<span class="old">${euro(p.compare_at_price)}</span>`:''}</div>
+    <div class="stock">${stock>0?'Auf Lager: '+stock:'Ausverkauft'}</div>
+    <div class="cardBtns"><button class="btn ghost" type="button" onclick="openProduct('${p.id}')">Details</button><button class="btn" type="button" ${stock<1?'disabled':''} onclick="add('${p.id}')">In den Warenkorb</button></div>
+   </div>
+  </article>`;
+ }).join('')||'<div class="notice">Keine Produkte gefunden.</div>';
+}
+function selectCategory(c){category=c;render();document.getElementById('productTitle').scrollIntoView({behavior:'smooth',block:'start'})}
+function setSearch(v){searchText=v;render()}
+function clearSearch(){searchText='';document.getElementById('search').value='';render()}
+function add(id){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ const next=(cart[id]||0)+1;if(next>Number(p.stock||0)){alert('Nicht genügend Bestand.');return}
+ cart[id]=next;saveCart();renderCart();openCart();
+}
+function change(id,d){
+ const p=products.find(x=>x.id===id);const next=(cart[id]||0)+d;
+ if(next>Number(p?.stock||0)){return}
+ if(next<=0)delete cart[id];else cart[id]=next;
+ saveCart();renderCart();
+}
+function saveCart(){localStorage.setItem('vtb_cart',JSON.stringify(cart));document.getElementById('cartCount').textContent=Object.values(cart).reduce((a,b)=>a+b,0)}
+function renderCart(){
+ saveCart();let rows=[],total=0;
+ for(const [id,q] of Object.entries(cart)){
+  const p=products.find(x=>x.id===id);if(!p)continue;
+  total+=Number(p.price)*q;
+  rows.push(`<div class="cartitem"><div class="row"><strong>${esc(p.name)}</strong><span>${euro(Number(p.price)*q)}</span></div><div class="row" style="margin-top:8px"><span>${q} × ${euro(p.price)}</span><span class="qty"><button type="button" onclick="change('${id}',-1)">−</button><button type="button" onclick="change('${id}',1)">+</button></span></div></div>`);
+ }
+ document.getElementById('cartItems').innerHTML=rows.join('')||'<div class="notice">Warenkorb ist leer.</div>';
+ document.getElementById('cartTotal').textContent=euro(total);
+}
+function openCart(){document.getElementById('cart').classList.add('open')}
+function closeCart(){document.getElementById('cart').classList.remove('open')}
+function productImages(p){
+ const arr=images.filter(i=>i.product_id===p.id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(i=>i.image_url).filter(Boolean);
+ if(p.image_url && !arr.includes(p.image_url)) arr.unshift(p.image_url);
+ return [...new Set(arr)];
+}
+function setGalleryImage(src){const el=document.getElementById('galleryMainImg');if(el)el.src=imgSrc(src);document.querySelectorAll('.thumb').forEach(x=>x.classList.toggle('active',x.dataset.src===src))}
+function openProduct(id){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ const imgs=productImages(p),src=imgs[0]||'';
+ const thumbs=imgs.map((u,i)=>`<button class="thumb ${i===0?'active':''}" data-src="${esc(u)}" type="button" onclick="setGalleryImage('${esc(u).replace(/'/g,"\\'")}')"><img ${imgAttrs(u,p.name+' '+(i+1),categoryForProduct(p))} loading="lazy"></button>`).join('');
+ document.getElementById('productDetail').innerHTML=`<div class="detail"><div><div class="galleryMain">${src?`<img id="galleryMainImg" ${imgAttrs(src,p.name,categoryForProduct(p))}>`:'<span class="noimg">Kein Bild</span>'}</div>${thumbs?`<div class="thumbs">${thumbs}</div>`:''}</div><div><div class="cat">${esc(categoryForProduct(p))}</div><h2>${esc(p.name)}</h2><div class="detailPrice">${euro(p.price)} ${p.compare_at_price?`<span class="old">${euro(p.compare_at_price)}</span>`:''}</div><div class="detailText">${esc(p.description||'Keine Beschreibung vorhanden.')}</div><p class="muted">${Number(p.stock||0)>0?'Auf Lager: '+p.stock:'Ausverkauft'}</p><button class="btn" style="width:100%" type="button" ${Number(p.stock||0)<1?'disabled':''} onclick="add('${p.id}');closeProduct()">In den Warenkorb</button></div></div>`;
+ document.getElementById('productModal').classList.add('open');
+}
+
+function closeProduct(){document.getElementById('productModal').classList.remove('open')}
+function selectedPayment(){return document.querySelector('input[name="paymethod"]:checked')?.value||'bank_transfer'}
+function updatePaymentUI(){
+ const method=selectedPayment();
+ const info=document.getElementById('paymentInfo');
+ if(method==='bank_transfer'){
+  info.style.display='block';
+  info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Empfänger:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
+ }else if(method==='paypal'){
+  info.style.display='block';
+  info.innerHTML='PayPal ist derzeit nicht als Zahlungsart aktiviert.';
+ }else{
+  info.style.display='block';
+  info.innerHTML='Kartenzahlungen sind vorbereitet, aber noch nicht live verbunden. Bitte wähle aktuell Banküberweisung / Echtzeitüberweisung.';
+ }
+}
+function openCheckout(){
+ if(!Object.keys(cart).length){alert('Der Warenkorb ist leer.');return}
+ closeCart();
+ document.querySelector('input[name="paymethod"][value="bank_transfer"]').checked=true;
+ updatePaymentUI();
+ document.getElementById('checkoutMsg').innerHTML='';
+ document.getElementById('checkout').classList.add('open');
+}
+function closeCheckout(){document.getElementById('checkout').classList.remove('open')}
+async function placeOrder(){
+ const msg=document.getElementById('checkoutMsg');msg.innerHTML='<div class="notice">Bestellung wird geprüft …</div>';
+ const name=document.getElementById('cName').value.trim(),email=document.getElementById('cEmail').value.trim(),address=document.getElementById('cAddress').value.trim(),note=document.getElementById('cNote').value.trim();
+ if(!name||!email||!address){msg.innerHTML='<div class="notice error">Bitte Name, E-Mail und Lieferadresse ausfüllen.</div>';return}
+ const method=selectedPayment();
+ if(method!=='bank_transfer'){
+  msg.innerHTML='<div class="notice">Diese Zahlungsart ist im Shop bereits vorbereitet, aber noch nicht live verbunden. Für PayPal und Karten müssen zuerst die Händler-/API-Zugangsdaten hinterlegt werden. Deine Bestellung wird deshalb noch nicht als bezahlt angelegt.</div>';return;
+ }
+ const items=Object.entries(cart).map(([product_id,quantity])=>({product_id,quantity}));
+ const {data,error}=await sb.rpc('create_order',{p_customer_name:name,p_customer_email:email,p_shipping_address:address,p_note:note,p_items:items});
+ if(error){msg.innerHTML='<div class="notice error">Bestellung fehlgeschlagen: '+esc(error.message)+'</div>';return}
+ const order=data?.[0]||data;
+ cart={};saveCart();renderCart();
+ msg.innerHTML=`<div class="notice success"><b>Bestellung erfolgreich!</b><br>Bestellnummer: <b>${esc(order?.order_number||'erstellt')}</b><br><br>Bitte überweise den Rechnungsbetrag an:<br><b>${esc(settings.account_holder||'')}</b><br>${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><br>Verwendungszweck: <b>${esc(order?.order_number||'')}</b></div>`;
+}
+async function openAdmin(){
+ document.getElementById('admin').classList.add('open');
+ const {data:{session}}=await sb.auth.getSession();renderAdmin(session);
+}
+function closeAdmin(){document.getElementById('admin').classList.remove('open')}
+async function renderAdmin(session){
+ const el=document.getElementById('adminContent');
+ if(!session){el.innerHTML=`<div class="notice">Melde dich mit deinem Supabase-Admin-Konto an.</div><div class="field"><label>E-Mail</label><input id="aEmail" type="email" autocomplete="email"></div><div class="field"><label>Passwort</label><input id="aPass" type="password" autocomplete="current-password"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" onclick="loginAdmin()">Anmelden</button><button class="btn ghost" type="button" onclick="sendPasswordReset()">Passwort vergessen?</button></div>`;return}
+ const {data:au}=await sb.from('admin_users').select('user_id').eq('user_id',session.user.id).maybeSingle();
+ if(!au){await sb.auth.signOut();el.innerHTML='<div class="notice error">Dieses Konto ist kein Admin.</div>';return}
+ const [{data:ps},{data:os},{data:ss}]=await Promise.all([
+  sb.from('products').select('*').order('created_at',{ascending:false}),
+  sb.from('orders').select('*').order('created_at',{ascending:false}),
+  sb.from('store_settings').select('*').limit(1)
+ ]);
+ settings={...settings,...(ss?.[0]||{})};window.adminData={ps:ps||[],os:os||[]};
+ el.innerHTML=`<div class="tabs"><button class="btn" type="button" onclick="adminHome()">Übersicht</button><button class="btn ghost" type="button" onclick="adminProducts()">Produkte</button><button class="btn ghost" type="button" onclick="adminOrders()">Bestellungen</button><button class="btn ghost" type="button" onclick="adminSettings()">Shop-Zahlung</button><button class="btn ghost" type="button" onclick="logoutAdmin()">Abmelden</button></div><div id="adminPanel"></div>`;
+ adminHome();
+}
+async function loginAdmin(){
+ const email=document.getElementById('aEmail').value.trim(),password=document.getElementById('aPass').value;
+ const {error}=await sb.auth.signInWithPassword({email,password});
+ if(error){document.getElementById('adminContent').insertAdjacentHTML('beforeend','<div class="notice error">'+esc(error.message)+'</div>');return}
+ renderAdmin((await sb.auth.getSession()).data.session);
+}
+async function sendPasswordReset(){
+ const email=document.getElementById('aEmail').value.trim();
+ const box=document.getElementById('adminContent');
+ if(!email){box.insertAdjacentHTML('beforeend','<div class="notice error">Bitte zuerst deine Admin-E-Mail eingeben.</div>');return}
+ const redirectTo='https://vextradebridge.netlify.app/';
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
+ if(error){box.insertAdjacentHTML('beforeend','<div class="notice error">'+esc(error.message)+'</div>');return}
+ box.insertAdjacentHTML('beforeend','<div class="notice success">Die Reset-E-Mail wurde gesendet. Öffne den Link aus der E-Mail.</div>');
+}
+async function openPasswordReset(){
+ document.getElementById('resetMsg').innerHTML='';
+ document.getElementById('newPass').value='';
+ document.getElementById('newPass2').value='';
+ document.getElementById('resetPassword').classList.add('open');
+}
+async function saveNewPassword(){
+ const p=document.getElementById('newPass').value;
+ const p2=document.getElementById('newPass2').value;
+ const msg=document.getElementById('resetMsg');
+ if(p.length<8){msg.innerHTML='<div class="notice error">Das Passwort muss mindestens 8 Zeichen haben.</div>';return}
+ if(p!==p2){msg.innerHTML='<div class="notice error">Die Passwörter stimmen nicht überein.</div>';return}
+ const {error}=await sb.auth.updateUser({password:p});
+ if(error){msg.innerHTML='<div class="notice error">'+esc(error.message)+'</div>';return}
+ msg.innerHTML='<div class="notice success">Passwort erfolgreich geändert. Du kannst dich jetzt im Admin anmelden.</div>';
+ setTimeout(()=>{document.getElementById('resetPassword').classList.remove('open');openAdmin();},900);
+}
+sb.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY' && session) setTimeout(openPasswordReset,0);
+});
+
+// Falls der Recovery-Link bereits mit einer gültigen Session geöffnet wurde,
+// das Passwort-Dialogfenster ebenfalls anzeigen.
+sb.auth.getSession().then(({data})=>{
+ if(data?.session && /access_token|type=recovery|code=/.test(window.location.hash+window.location.search)) setTimeout(openPasswordReset,0);
+});
+async function logoutAdmin(){await sb.auth.signOut();renderAdmin(null)}
+function adminHome(){
+ const ps=window.adminData.ps||[], os=window.adminData.os||[];
+ const active=ps.filter(p=>p.active).length, low=ps.filter(p=>Number(p.stock||0)<=3).length;
+ const pending=os.filter(o=>o.status==='pending').length;
+ const revenue=os.filter(o=>!['cancelled'].includes(o.status)).reduce((n,o)=>n+Number(o.total||0),0);
+ document.getElementById('adminPanel').innerHTML=`<div class="adminStats">
+  <div class="notice"><b>Produkte</b><br><span style="font-size:24px">${ps.length}</span><br><span class="muted">${active} aktiv</span></div>
+  <div class="notice"><b>Bestellungen</b><br><span style="font-size:24px">${os.length}</span><br><span class="muted">${pending} Zahlung offen</span></div>
+  <div class="notice"><b>Umsatz</b><br><span style="font-size:24px">${euro(revenue)}</span><br><span class="muted">Stornierte ausgeschlossen</span></div>
+  <div class="notice"><b>Niedriger Bestand</b><br><span style="font-size:24px">${low}</span><br><span class="muted">3 oder weniger</span></div>
+ </div><div class="notice"><b>Schnellzugriff</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn" type="button" onclick="adminProducts();setTimeout(clearProductForm,0)">+ Produkt</button><button class="btn ghost" type="button" onclick="adminOrders()">Bestellungen öffnen</button><button class="btn ghost" type="button" onclick="adminSettings()">Shop-Zahlung</button></div></div>`;
+}
+function adminProducts(){
+ const ps=window.adminData.ps||[];
+ document.getElementById('adminPanel').innerHTML=`
+ <div class="adminToolbar">
+  <button class="btn ghost" type="button" onclick="refreshAdmin(false)">↻ Aktualisieren</button>
+  <input id="productSearch" placeholder="Produkte suchen…" oninput="filterAdminProducts()" style="flex:1;min-width:220px">
+  <select id="productFilter" onchange="filterAdminProducts()"><option value="all">Alle Kategorien</option>${CATEGORIES.map(c=>`<option value="${esc(c.label)}">${esc(c.label)}</option>`).join('')}</select>
+  <select id="stockFilter" onchange="filterAdminProducts()"><option value="all">Alle Bestände</option><option value="low">≤ 3</option><option value="out">Ausverkauft</option></select>
+  <select id="activeFilter" onchange="filterAdminProducts()"><option value="all">Alle Status</option><option value="active">Aktiv</option><option value="inactive">Inaktiv</option></select>
+ </div>
+ <div class="adminGrid">
+  <div>
+   <h3>Produkt bearbeiten / neu</h3>
+   <div id="productEditorStatus"></div>
+   <div class="field"><label>ID</label><input id="pId" readonly placeholder="Wird beim Speichern vergeben"></div>
+   <div class="field"><label>Name</label><input id="pName" autocomplete="off"></div>
+   <div class="field"><label>Kategorie</label><select id="pCat">${CATEGORIES.map(c=>`<option value="${esc(c.label)}">${esc(c.label)}</option>`).join('')}</select></div>
+   <div class="field"><label>Preis €</label><input id="pPrice" type="number" min="0" step="0.01"></div>
+   <div class="field"><label>Vergleichspreis €</label><input id="pCompare" type="number" min="0" step="0.01"></div>
+   <div class="field"><label>Bestand</label><input id="pStock" type="number" min="0" step="1"></div>
+   <div class="field"><label>Hauptbild-URL</label><input id="pImage" placeholder="Direkte Bild-URL (optional)"><div class="muted">Diese URL wird als Hauptbild gespeichert. Deine bestehenden Bilder werden nicht überschrieben, solange du hier nichts änderst.</div></div>
+   <div class="field"><label>Bilder hinzufügen</label><input id="pFiles" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onchange="previewAdminFiles()"><div class="muted">JPG, PNG, WebP oder GIF · max. 5 MB je Bild</div><div id="filePreview" class="thumbs"></div></div>
+   <div class="field"><label>Beschreibung</label><textarea id="pDesc" rows="5"></textarea></div>
+   <div class="field"><label>Aktiv</label><select id="pActive"><option value="true">Ja</option><option value="false">Nein</option></select></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="saveProductBtn" class="btn" type="button" onclick="saveProduct()">Speichern</button>
+    <button class="btn ghost" type="button" onclick="clearProductForm()">Neues Produkt</button>
+   </div>
+   <div id="imageManager" class="notice" style="display:none;margin-top:14px"></div>
+  </div>
+  <div>
+   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h3 style="margin-bottom:10px">Produkte (<span id="productCount">${ps.length}</span>)</h3><span id="productHint" class="muted"></span></div>
+   <div class="tablewrap"><table class="table"><thead><tr><th>Bild</th><th>Name</th><th>Kategorie</th><th>Preis</th><th>Bestand</th><th>Aktiv</th><th>Aktion</th></tr></thead><tbody id="productRows"></tbody></table></div>
+  </div>
+ </div>`;
+ filterAdminProducts();
+}
+function filterAdminProducts(){
+ const ps=window.adminData.ps||[];
+ const q=norm(document.getElementById('productSearch')?.value||'');
+ const cat=document.getElementById('productFilter')?.value||'all';
+ const sf=document.getElementById('stockFilter')?.value||'all';
+ const af=document.getElementById('activeFilter')?.value||'all';
+ const rows=ps.filter(p=>{
+  const name=norm(p.name), c=categoryForProduct(p), st=Number(p.stock||0);
+  return (!q||name.includes(q)||norm(p.description).includes(q)||norm(c).includes(q)) &&
+   (cat==='all'||c===cat) && (sf==='all'||(sf==='low'&&st<=3)||(sf==='out'&&st===0)) &&
+   (af==='all'||(af==='active'&&p.active)||(af==='inactive'&&!p.active));
+ });
+ const count=document.getElementById('productCount'); if(count)count.textContent=rows.length;
+ const hint=document.getElementById('productHint'); if(hint)hint.textContent=rows.length===ps.length?'Alle Produkte':'Gefiltert';
+ const body=document.getElementById('productRows'); if(!body)return;
+ body.innerHTML=rows.map(p=>{
+  const img=imageFor(p);
+  return `<tr>
+   <td><img ${imgAttrs(img,p.name,categoryForProduct(p))} loading="lazy" style="width:58px;height:58px;object-fit:contain;border-radius:8px;background:#111"></td>
+   <td><b>${esc(p.name)}</b><br><span class="muted">${esc(p.id)}</span></td>
+   <td>${esc(categoryForProduct(p))}</td><td>${euro(p.price)}</td><td>${Number(p.stock||0)}</td><td>${p.active?'Ja':'Nein'}</td>
+   <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ghost" type="button" onclick="editProductById('${p.id}')">Bearbeiten</button><button class="btn ghost" type="button" onclick="toggleProductActive('${p.id}')">${p.active?'Deaktivieren':'Aktivieren'}</button><button class="btn ghost" type="button" onclick="duplicateProduct('${p.id}')">Duplizieren</button><button class="btn ghost" type="button" onclick="deleteProduct('${p.id}')">Löschen</button></div></td>
+  </tr>`;
+ }).join('')||'<tr><td colspan="7" class="muted">Keine Produkte gefunden.</td></tr>';
+}
+function previewAdminFiles(){
+ const box=document.getElementById('filePreview'); if(!box)return;
+ const files=[...(document.getElementById('pFiles')?.files||[])];
+ box.innerHTML=files.map(f=>`<div class="thumb" title="${esc(f.name)}"><img src="${URL.createObjectURL(f)}" alt="${esc(f.name)}"></div>`).join('');
+}
+async function uploadProductImages(productId){
+ const input=document.getElementById('pFiles'); if(!input?.files?.length)return[];
+ if(!productId)throw new Error('Bitte zuerst das Produkt speichern.');
+ const {data:existing,error:ee}=await sb.from('product_images').select('sort_order').eq('product_id',productId);
+ if(ee)throw ee;
+ let order=(existing||[]).reduce((m,x)=>Math.max(m,Number(x.sort_order??-1)),-1)+1;
+ const urls=[];
+ for(const file of [...input.files]){
+  if(file.size>5*1024*1024)throw new Error(file.name+' ist größer als 5 MB.');
+  if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type))throw new Error(file.name+' hat ein nicht unterstütztes Bildformat.');
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  const path=productId+'/'+crypto.randomUUID()+'.'+ext;
+  const {error:up}=await sb.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false,cacheControl:'31536000'});
+  if(up)throw new Error('Storage-Upload fehlgeschlagen: '+up.message);
+  const {data:pub}=sb.storage.from('product-images').getPublicUrl(path);
+  const url=pub?.publicUrl;
+  if(!url)throw new Error('Keine öffentliche Bild-URL erhalten.');
+  const {error:ins}=await sb.from('product_images').insert({product_id:productId,image_url:url,sort_order:order++});
+  if(ins){try{await sb.storage.from('product-images').remove([path])}catch(e){};throw new Error('Bild wurde hochgeladen, konnte aber nicht in product_images gespeichert werden: '+ins.message)}
+  urls.push(url);
+ }
+ input.value=''; const pr=document.getElementById('filePreview'); if(pr)pr.innerHTML='';
+ return urls;
+}
+async function loadImageManager(productId){
+ const box=document.getElementById('imageManager'); if(!box||!productId)return;
+ const {data:rows,error}=await sb.from('product_images').select('*').eq('product_id',productId).order('sort_order',{ascending:true});
+ box.style.display='block';
+ if(error){box.innerHTML='<b>Bilder:</b> '+esc(error.message);return}
+ const html=(rows||[]).map(r=>{
+  const main=Number(r.sort_order)===0;
+  const safeUrl=esc(r.image_url||'').replace(/'/g,"\\'");
+  return `<div class="imageAdminItem ${main?'active':''}"><img ${imgAttrs(r.image_url,'Produktbild','')} loading="lazy"><div class="muted" style="font-size:11px;word-break:break-all">${esc(r.image_url||'')}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px"><button type="button" class="btn ghost" onclick="setMainImage('${productId}','${r.id}','${safeUrl}')">${main?'✓ Hauptbild':'Als Hauptbild'}</button><button type="button" class="btn ghost" onclick="deleteProductImage('${r.id}','${safeUrl}')">Löschen</button></div></div>`;
+ }).join('');
+ box.innerHTML='<b>Gespeicherte Bilder dieses Produkts</b><div class="imageAdminGrid">'+(html||'<span class="muted">Noch keine zusätzlichen Bilder.</span>')+'</div>';
+}
+async function setMainImage(productId,imageId,url){
+ const {error:e1}=await sb.from('product_images').update({sort_order:99}).eq('product_id',productId); if(e1){showAdminError(e1);return}
+ const {error:e2}=await sb.from('product_images').update({sort_order:0}).eq('id',imageId); if(e2){showAdminError(e2);return}
+ const {error:e3}=await sb.from('products').update({image_url:url}).eq('id',productId); if(e3){showAdminError(e3);return}
+ await refreshAdmin(false); await loadImageManager(productId); showAdminMessage('Hauptbild geändert.','success');
+}
+async function deleteProductImage(id,url){
+ if(!confirm('Dieses Bild wirklich löschen?'))return;
+ const {data:row,error}=await sb.from('product_images').select('product_id,sort_order').eq('id',id).maybeSingle();
+ if(error){showAdminError(error);return}
+ const {error:del}=await sb.from('product_images').delete().eq('id',id);
+ if(del){showAdminError(del);return}
+ try{const marker='/storage/v1/object/public/product-images/';const i=(url||'').indexOf(marker);if(i>=0)await sb.storage.from('product-images').remove([decodeURIComponent(url.slice(i+marker.length))])}catch(e){}
+ if(row?.sort_order===0&&row.product_id){
+  const {data:next}=await sb.from('product_images').select('id,image_url').eq('product_id',row.product_id).order('sort_order').limit(1).maybeSingle();
+  if(next?.id){await sb.from('product_images').update({sort_order:0}).eq('id',next.id);await sb.from('products').update({image_url:next.image_url}).eq('id',row.product_id)}else await sb.from('products').update({image_url:null}).eq('id',row.product_id);
+ }
+ await refreshAdmin(false); await loadImageManager(document.getElementById('pId')?.value||row?.product_id); showAdminMessage('Bild gelöscht.','success');
+}
+function clearProductForm(){
+ ['pId','pName','pPrice','pCompare','pStock','pImage','pDesc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+ const f=document.getElementById('pFiles');if(f)f.value=''; const pr=document.getElementById('filePreview');if(pr)pr.innerHTML='';
+ if(document.getElementById('pCat'))document.getElementById('pCat').value='Zubehör'; if(document.getElementById('pActive'))document.getElementById('pActive').value='true';
+ const im=document.getElementById('imageManager');if(im){im.style.display='none';im.innerHTML=''};
+ const st=document.getElementById('productEditorStatus');if(st)st.innerHTML='';
+}
+function editProductById(id){const p=(window.adminData.ps||[]).find(x=>x.id===id);if(p)editProduct(p)}
+function editProduct(p){
+ document.getElementById('pId').value=p.id||'';document.getElementById('pName').value=p.name||'';document.getElementById('pCat').value=categoryForProduct(p);document.getElementById('pPrice').value=p.price??'';document.getElementById('pCompare').value=p.compare_at_price??'';document.getElementById('pStock').value=p.stock??0;document.getElementById('pImage').value=p.image_url||'';document.getElementById('pDesc').value=p.description||'';document.getElementById('pActive').value=String(p.active);document.getElementById('pFiles').value='';document.getElementById('filePreview').innerHTML='';
+ document.getElementById('imageManager').style.display='block';loadImageManager(p.id);window.scrollTo({top:document.getElementById('adminPanel').offsetTop,behavior:'smooth'});
+}
+async function toggleProductActive(id){const p=(window.adminData.ps||[]).find(x=>x.id===id);if(!p)return;const {error}=await sb.from('products').update({active:!p.active}).eq('id',id);if(error){showAdminError(error);return}p.active=!p.active;filterAdminProducts();showAdminMessage(p.active?'Produkt aktiviert.':'Produkt deaktiviert.','success');}
+async function saveProduct(){
+ const btn=document.getElementById('saveProductBtn'); if(btn?.disabled)return;
+ if(btn){btn.disabled=true;btn.textContent='Speichert…'}
+ try{
+  const id=document.getElementById('pId').value.trim();
+  const imageUrl=document.getElementById('pImage').value.trim()||null;
+  const obj={name:document.getElementById('pName').value.trim(),category:document.getElementById('pCat').value,price:Number(document.getElementById('pPrice').value||0),compare_at_price:document.getElementById('pCompare').value?Number(document.getElementById('pCompare').value):null,stock:Number(document.getElementById('pStock').value||0),image_url:imageUrl,description:document.getElementById('pDesc').value.trim(),active:document.getElementById('pActive').value==='true'};
+  if(!obj.name)throw new Error('Bitte einen Produktnamen eingeben.');
+  if(!Number.isFinite(obj.price)||obj.price<0)throw new Error('Der Preis muss eine gültige Zahl ab 0 sein.');
+  if(!Number.isFinite(obj.stock)||obj.stock<0)throw new Error('Der Bestand muss eine gültige Zahl ab 0 sein.');
+  if(obj.compare_at_price!==null&&(!Number.isFinite(obj.compare_at_price)||obj.compare_at_price<0))throw new Error('Der Vergleichspreis ist ungültig.');
+  let productId=id;
+  if(id){const {error}=await sb.from('products').update(obj).eq('id',id);if(error)throw error}
+  else {const {data,error}=await sb.from('products').insert(obj).select().single();if(error)throw error;productId=data.id}
+  // URL im Formular immer mit dem Hauptbild-Eintrag synchronisieren.
+  if(imageUrl){
+   const {data:mainRows,error:me}=await sb.from('product_images').select('id').eq('product_id',productId).eq('sort_order',0).limit(1);
+   if(me)throw me;
+   if(mainRows?.length){const {error}=await sb.from('product_images').update({image_url:imageUrl}).eq('id',mainRows[0].id);if(error)throw error}
+   else {const {error}=await sb.from('product_images').insert({product_id:productId,image_url:imageUrl,sort_order:0});if(error)throw error}
+  }
+  const urls=await uploadProductImages(productId);
+  if(!imageUrl&&urls.length){const {error}=await sb.from('products').update({image_url:urls[0]}).eq('id',productId);if(error)throw error;const {error:me}=await sb.from('product_images').update({sort_order:0}).eq('product_id',productId).eq('image_url',urls[0]);if(me)throw me}
+  await refreshAdmin(false); editProductById(productId); showAdminMessage('Produkt erfolgreich gespeichert.','success');
+ }catch(e){showAdminError(e)}finally{if(btn){btn.disabled=false;btn.textContent='Speichern'}}
+}
+async function duplicateProduct(id){
+ const p=(window.adminData.ps||[]).find(x=>x.id===id);if(!p)return;
+ const copy={name:(p.name||'')+' – Kopie',category:categoryForProduct(p),price:Number(p.price||0),compare_at_price:p.compare_at_price==null?null:Number(p.compare_at_price),stock:Number(p.stock||0),image_url:p.image_url||null,description:p.description||'',active:false};
+ const {data:newProduct,error}=await sb.from('products').insert(copy).select().single();if(error){showAdminError(error);return}
+ const {data:imgs,error:ie}=await sb.from('product_images').select('image_url,sort_order').eq('product_id',id).order('sort_order');
+ if(ie){showAdminError(ie);return}
+ if(imgs?.length){const {error}=await sb.from('product_images').insert(imgs.map(x=>({product_id:newProduct.id,image_url:x.image_url,sort_order:x.sort_order})));if(error){showAdminError(error);return}}
+ await refreshAdmin(false);editProductById(newProduct.id);showAdminMessage('Produkt inklusive Bilder dupliziert.','success');
+}
+async function deleteProduct(id){
+ if(!confirm('Produkt wirklich löschen?'))return;
+ const {data:imgs,error:ie}=await sb.from('product_images').select('id,image_url').eq('product_id',id);if(ie){showAdminError(ie);return}
+ const {error:imgError}=await sb.from('product_images').delete().eq('product_id',id);if(imgError){showAdminError(imgError);return}
+ const {error}=await sb.from('products').delete().eq('id',id);if(error){showAdminError(error);return}
+ for(const im of imgs||[]){try{const marker='/storage/v1/object/public/product-images/';const i=(im.image_url||'').indexOf(marker);if(i>=0)await sb.storage.from('product-images').remove([decodeURIComponent(im.image_url.slice(i+marker.length))])}catch(e){}}
+ clearProductForm();await refreshAdmin(false);showAdminMessage('Produkt gelöscht.','success');
+}
+async function refreshAdmin(reloadShop=true){
+ const [pr,or,ir]=await Promise.all([sb.from('products').select('*').order('created_at',{ascending:false}),sb.from('orders').select('*').order('created_at',{ascending:false}),sb.from('product_images').select('*').order('sort_order')]);
+ if(pr.error){showAdminError(pr.error);return false} if(or.error){showAdminError(or.error);return false} if(ir.error){showAdminError(ir.error);return false}
+ window.adminData.ps=pr.data||[];window.adminData.os=or.data||[];images=ir.data||[];adminProducts();if(reloadShop)await load();return true;
+}
+function adminOrders(){const os=window.adminData.os||[];document.getElementById('adminPanel').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input id="orderSearch" placeholder="Bestellungen suchen…" oninput="filterAdminOrders()" style="flex:1;min-width:220px"><select id="orderStatusFilter" onchange="filterAdminOrders()"><option value="all">Alle Status</option>${['pending','paid','processing','shipped','completed','cancelled'].map(s=>`<option value="${s}">${statusLabel(s)}</option>`).join('')}</select><button class="btn ghost" type="button" onclick="refreshOrdersAdmin()">Aktualisieren</button></div><h3>Bestellungen (<span id="orderCount">${os.length}</span>)</h3><div class="tablewrap"><table class="table"><thead><tr><th>Nr.</th><th>Kunde</th><th>Gesamt</th><th>Status</th><th>Datum</th><th>Details</th></tr></thead><tbody id="orderRows"></tbody></table></div><div id="orderDetail"></div>`;filterAdminOrders()}
+async function refreshOrdersAdmin(){const btn=document.querySelector('#adminPanel button[onclick="refreshOrdersAdmin()"]');if(btn){btn.disabled=true;btn.textContent='Lädt…'}const [pr,or]=await Promise.all([sb.from('products').select('*').order('created_at',{ascending:false}),sb.from('orders').select('*').order('created_at',{ascending:false})]);if(pr.error){showAdminError(pr.error);if(btn){btn.disabled=false;btn.textContent='Aktualisieren'}return}if(or.error){showAdminError(or.error);if(btn){btn.disabled=false;btn.textContent='Aktualisieren'}return}window.adminData.ps=pr.data||[];window.adminData.os=or.data||[];adminOrders();showAdminMessage('Bestellungen aktualisiert.','success')}
+function filterAdminOrders(){const os=window.adminData.os||[],q=(document.getElementById('orderSearch')?.value||'').toLowerCase(),st=document.getElementById('orderStatusFilter')?.value||'all';const rows=os.filter(o=>(st==='all'||o.status===st)&&(!q||[o.order_number,o.customer_name,o.customer_email].join(' ').toLowerCase().includes(q)));document.getElementById('orderCount').textContent=rows.length;document.getElementById('orderRows').innerHTML=rows.map(o=>`<tr><td>${esc(o.order_number||o.id)}</td><td>${esc(o.customer_name)}<br><span class="muted">${esc(o.customer_email)}</span></td><td>${euro(o.total)}</td><td><select onchange="setOrderStatus('${o.id}',this.value)">${['pending','paid','processing','shipped','completed','cancelled'].map(s=>`<option value="${s}" ${o.status===s?'selected':''}>${statusLabel(s)}</option>`).join('')}</select></td><td>${o.created_at?new Date(o.created_at).toLocaleString('de-DE'):''}</td><td><button class="btn ghost" type="button" onclick="showOrderDetail('${o.id}')">Ansehen</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">Keine Bestellungen gefunden.</td></tr>'}
+function showOrderDetail(id){const o=(window.adminData.os||[]).find(x=>x.id===id);if(!o)return;let items=[];try{items=typeof o.items==='string'?JSON.parse(o.items):o.items||[]}catch(e){};document.getElementById('orderDetail').innerHTML=`<div class="notice" style="margin-top:12px"><b>Bestellung ${esc(o.order_number||o.id)}</b><br><br><b>Kunde:</b> ${esc(o.customer_name)} · ${esc(o.customer_email)}<br><b>Adresse:</b> ${esc(o.shipping_address||o.customer_address||'—')}<br><b>Notiz:</b> ${esc(o.note||'—')}<br><br><b>Artikel:</b><br>${items.map(i=>`${esc(i.name||i.product_name||i.product_id||'Artikel')} × ${Number(i.quantity||1)} · ${euro(i.price||0)}`).join('<br>')||'Keine Artikeldetails gespeichert.'}<br><br><b>Gesamt: ${euro(o.total)}</b><br><button class="btn ghost" type="button" style="margin-top:10px" onclick="document.getElementById('orderDetail').innerHTML=''">Schließen</button></div>`}
+function showAdminMessage(message,type='success'){const p=document.getElementById('adminPanel');if(!p)return;const n=document.createElement('div');n.className='notice '+(type==='error'?'error':'success');n.style.marginBottom='12px';n.innerHTML=esc(message);p.prepend(n);setTimeout(()=>n.remove(),5000)}
+function showAdminError(error){showAdminMessage(error?.message||String(error||'Unbekannter Fehler'),'error')}
+function statusLabel(s){return ({new:'Neu',pending:'Zahlung ausstehend',paid:'Bezahlt',processing:'In Bearbeitung',shipped:'Versendet',completed:'Abgeschlossen',cancelled:'Storniert'})[s]||s}
+async function setOrderStatus(id,status){const {error}=await sb.from('orders').update({status}).eq('id',id);if(error)alert(error.message);else{const o=window.adminData.os.find(x=>x.id===id);if(o)o.status=status;filterAdminOrders()}}
+async function markPaid(id){if(!confirm('Hast du den tatsächlichen Zahlungseingang auf deinem Bankkonto geprüft?'))return;await setOrderStatus(id,'paid')}
+function adminSettings(){document.getElementById('adminPanel').innerHTML=`<h3>Shop-Zahlung</h3><div class="notice">Diese Daten werden beim Checkout für Banküberweisungen angezeigt.</div><div class="field"><label>Zahlungsarten</label><select id="sMethod"><option value="multiple">Banküberweisung + Karte</option><option value="bank_transfer">Nur Banküberweisung</option><option value="paypal">Nur PayPal</option></select></div><div class="field"><label>Kontoinhaber</label><input id="sHolder" value="${esc(settings.account_holder||'')}"></div><div class="field"><label>Bank</label><input id="sBank" value="${esc(settings.bank_name||'')}"></div><div class="field"><label>IBAN</label><input id="sIban" value="${esc(settings.iban||'')}"></div><div class="field"><label>BIC</label><input id="sBic" value="${esc(settings.bic||'')}"></div><div class="field"><label>PayPal-E-Mail</label><input id="sPaypal" value="${esc(settings.paypal_email||'')}"></div><button class="btn" type="button" onclick="saveSettings()">Zahlungsdaten speichern</button>`;document.getElementById('sMethod').value=settings.payment_method||'bank_transfer'}
+async function saveSettings(){
+ const obj={id:settings.id||1,payment_method:document.getElementById('sMethod').value,account_holder:document.getElementById('sHolder').value.trim(),bank_name:document.getElementById('sBank').value.trim(),iban:document.getElementById('sIban').value.trim(),bic:document.getElementById('sBic').value.trim(),paypal_email:document.getElementById('sPaypal').value.trim()};
+ const {data,error}=await sb.from('store_settings').upsert(obj,{onConflict:'id'}).select().single();
+ if(error)alert('Zahlungsdaten konnten nicht gespeichert werden: '+error.message);else{settings=data||obj;showAdminMessage('Zahlungsdaten gespeichert.','success');}
+}
+document.getElementById('year').textContent=new Date().getFullYear();
+load();
+</script>
+</body>
+</html>
