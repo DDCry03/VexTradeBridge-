@@ -482,7 +482,6 @@ if(method==='card'){
     Verwendungszweck: <b>${esc(order?.order_number||'')}</b>
   </div>`;
 }
-}
 function closeAdmin(){document.getElementById('admin').classList.remove('open')}
 async function renderAdmin(session){
  const el=document.getElementById('adminContent');
