@@ -456,9 +456,10 @@ async function placeOrder(){
  const name=document.getElementById('cName').value.trim(),email=document.getElementById('cEmail').value.trim(),address=document.getElementById('cAddress').value.trim(),note=document.getElementById('cNote').value.trim();
  if(!name||!email||!address){msg.innerHTML='<div class="notice error">Bitte Name, E-Mail und Lieferadresse ausfüllen.</div>';return}
  const method=selectedPayment();
- if(method!=='bank_transfer'){
-  msg.innerHTML='<div class="notice">Diese Zahlungsart ist im Shop bereits vorbereitet, aber noch nicht live verbunden. Für PayPal und Karten müssen zuerst die Händler-/API-Zugangsdaten hinterlegt werden. Deine Bestellung wird deshalb noch nicht als bezahlt angelegt.</div>';return;
- }
+if(method==='card'){
+  msg.innerHTML='<div class="notice">Kartenzahlung ist aktuell noch nicht verfügbar. Bitte wähle Banküberweisung oder PayPal.</div>';
+  return;
+}
  const items=Object.entries(cart).map(([product_id,quantity])=>({product_id,quantity}));
  const {data,error}=await sb.rpc('create_order',{p_customer_name:name,p_customer_email:email,p_shipping_address:address,p_note:note,p_items:items});
  if(error){msg.innerHTML='<div class="notice error">Bestellung fehlgeschlagen: '+esc(error.message)+'</div>';return}
