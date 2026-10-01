@@ -427,108 +427,6 @@ function updatePaymentUI(){
  if(method==='bank_transfer'){
   info.style.display='block';
   info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Kontoinhaber:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><div style="margin-top:14px;padding:12px;border:1px solid #333;border-radius:8px;"><b>Hinweis:</b><br>VexTradeBridge wird derzeit als Einzelunternehmen von Daniel Demizki geführt. Daher erfolgt die Banküberweisung auf das Konto des Inhabers Daniel Demizki.</div><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
-  <!-- PayPal Freunde & Familie -->
-<div class="payment-option paypal-option">
-  <a
-    href="https://www.paypal.me/Demizki"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="paypal-button"
-  >
-    <span class="paypal-icon">P</span>
-
-    <span>
-      <strong>PayPal – Freunde & Familie</strong>
-      <small>Mit PayPal.Me bezahlen</small>
-    </span>
-  </a>
-
-  <div class="paypal-notice">
-    <strong>Wichtiger Hinweis zu PayPal</strong>
-    <p>
-      PayPal-Zahlungen werden ausschließlich über den vorgesehenen privaten
-      Zahlungsweg akzeptiert. Zahlungen über „Waren und Dienstleistungen“
-      können nicht für diese Bestellung verwendet werden. Wird eine Zahlung
-      über „Waren und Dienstleistungen“ vorgenommen, kann die Bestellung
-      storniert und der Betrag entsprechend den geltenden PayPal-Bedingungen
-      zurückerstattet werden.
-    </p>
-  </div>
-</div>
-
-<style>
-  .paypal-option {
-    margin-top: 12px;
-    width: 100%;
-  }
-
-  .paypal-button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 14px 16px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #fff;
-    color: #111;
-    text-decoration: none;
-    cursor: pointer;
-    transition: 0.2s ease;
-  }
-
-  .paypal-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .paypal-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #003087;
-    color: #fff;
-    font-size: 21px;
-    font-weight: 700;
-  }
-
-  .paypal-button strong {
-    display: block;
-    font-size: 15px;
-  }
-
-  .paypal-button small {
-    display: block;
-    margin-top: 3px;
-    color: #666;
-    font-size: 12px;
-  }
-
-  .paypal-notice {
-    margin-top: 10px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    background: #fff4e5;
-    border: 1px solid #f0c36d;
-    color: #664d03;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .paypal-notice strong {
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .paypal-notice p {
-    margin: 0;
-  }
-</style>
  }else{
   info.style.display='block';
   info.innerHTML='Kartenzahlungen sind vorbereitet, aber noch nicht live verbunden. Bitte wähle aktuell Banküberweisung / Echtzeitüberweisung.';
@@ -557,7 +455,7 @@ async function placeOrder(){
  const order=data?.[0]||data;
  cart={};saveCart();renderCart();
  msg.innerHTML=`<div class="notice success"><b>Bestellung erfolgreich!</b><br>Bestellnummer: <b>${esc(order?.order_number||'erstellt')}</b><br><br>Bitte überweise den Rechnungsbetrag an:<br><b>${esc(settings.account_holder||'')}</b><br>${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><br>Verwendungszweck: <b>${esc(order?.order_number||'')}</b></div>`;
-}
+}else{
 async function openAdmin(){
  document.getElementById('admin').classList.add('open');
  const {data:{session}}=await sb.auth.getSession();renderAdmin(session);
