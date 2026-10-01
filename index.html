@@ -426,8 +426,7 @@ function updatePaymentUI(){
  const info=document.getElementById('paymentInfo');
  if(method==='bank_transfer'){
   info.style.display='block';
-  info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Empfänger:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
- }else if(method==='paypal'){
+  info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Kontoinhaber:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><div style="margin-top:14px;padding:12px;border:1px solid #333;border-radius:8px;"><b>Hinweis:</b><br>VexTradeBridge wird derzeit als Einzelunternehmen von Daniel Demizki geführt. Daher erfolgt die Banküberweisung auf das Konto des Inhabers Daniel Demizki.</div><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
   info.style.display='block';
   info.innerHTML='PayPal ist derzeit nicht als Zahlungsart aktiviert.';
  }else{
