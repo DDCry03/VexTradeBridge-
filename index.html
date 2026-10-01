@@ -256,6 +256,13 @@ body{
   <div class="field"><label>Zahlungsart</label>
    <div class="payopts">
     <label class="payopt"><input type="radio" name="paymethod" value="bank_transfer" checked onchange="updatePaymentUI()"><span>🏦 <b>Banküberweisung / Echtzeitüberweisung</b><small>Direkt auf das hinterlegte Bankkonto</small></span></label>
+   <label class="payopt">
+  <input type="radio" name="paymethod" value="paypal" onchange="updatePaymentUI()">
+  <span>
+    🅿️ <b>PayPal – Freunde & Familie</b>
+    <small>Über PayPal.Me bezahlen</small>
+  </span>
+</label>
     <label class="payopt"><input type="radio" name="paymethod" value="card" onchange="updatePaymentUI()"><span>💳 <b>Kreditkarte / Debitkarte</b><small>Visa, Mastercard und unterstützte Karten</small></span></label>
    </div>
   </div>
@@ -427,6 +434,9 @@ function updatePaymentUI(){
  if(method==='bank_transfer'){
   info.style.display='block';
   info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Kontoinhaber:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><div style="margin-top:14px;padding:12px;border:1px solid #333;border-radius:8px;"><b>Hinweis:</b><br>VexTradeBridge wird derzeit als Einzelunternehmen von Daniel Demizki geführt. Daher erfolgt die Banküberweisung auf das Konto des Inhabers Daniel Demizki.</div><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
+  }else if(method==='paypal'){
+  info.style.display='block';
+  info.innerHTML='PayPal – Freunde & Familie.<br><a href="https://www.paypal.me/Demizki" target="_blank" rel="noopener noreferrer" style="color:#ff6a70;font-weight:800;">PayPal.Me öffnen</a><br><small>Bitte beachte die Zahlungsbedingungen von PayPal.</small>';
  }else{
   info.style.display='block';
   info.innerHTML='Kartenzahlungen sind vorbereitet, aber noch nicht live verbunden. Bitte wähle aktuell Banküberweisung / Echtzeitüberweisung.';
