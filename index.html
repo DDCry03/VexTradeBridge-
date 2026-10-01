@@ -456,11 +456,34 @@ async function placeOrder(){
  const name=document.getElementById('cName').value.trim(),email=document.getElementById('cEmail').value.trim(),address=document.getElementById('cAddress').value.trim(),note=document.getElementById('cNote').value.trim();
  if(!name||!email||!address){msg.innerHTML='<div class="notice error">Bitte Name, E-Mail und Lieferadresse ausfüllen.</div>';return}
  const method=selectedPayment();
+
 if(method==='card'){
   msg.innerHTML='<div class="notice">Kartenzahlung ist aktuell noch nicht verfügbar. Bitte wähle Banküberweisung oder PayPal.</div>';
   return;
 }
- if(method==='paypal'){
+
+const items=Object.entries(cart).map(([product_id,quantity])=>({product_id,quantity}));
+
+const {data,error}=await sb.rpc('create_order',{
+  p_customer_name:name,
+  p_customer_email:email,
+  p_shipping_address:address,
+  p_note:note,
+  p_items:items
+});
+
+if(error){
+  msg.innerHTML='<div class="notice error">Bestellung fehlgeschlagen: '+esc(error.message)+'</div>';
+  return;
+}
+
+const order=data?.[0]||data;
+
+cart={};
+saveCart();
+renderCart();
+
+if(method==='paypal'){
   msg.innerHTML=`<div class="notice success">
     <b>Bestellung erfolgreich!</b><br>
     Bestellnummer: <b>${esc(order?.order_number||'erstellt')}</b><br><br>
@@ -482,7 +505,6 @@ if(method==='card'){
     Verwendungszweck: <b>${esc(order?.order_number||'')}</b>
   </div>`;
 }
-function closeAdmin(){document.getElementById('admin').classList.remove('open')}
 async function renderAdmin(session){
  const el=document.getElementById('adminContent');
  if(!session){el.innerHTML=`<div class="notice">Melde dich mit deinem Supabase-Admin-Konto an.</div><div class="field"><label>E-Mail</label><input id="aEmail" type="email" autocomplete="email"></div><div class="field"><label>Passwort</label><input id="aPass" type="password" autocomplete="current-password"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" onclick="loginAdmin()">Anmelden</button><button class="btn ghost" type="button" onclick="sendPasswordReset()">Passwort vergessen?</button></div>`;return}
