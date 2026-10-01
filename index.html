@@ -505,6 +505,7 @@ if(method==='paypal'){
     Verwendungszweck: <b>${esc(order?.order_number||'')}</b>
   </div>`;
 }
+ function closeAdmin(){document.getElementById('admin').classList.remove('open')}
 async function renderAdmin(session){
  const el=document.getElementById('adminContent');
  if(!session){el.innerHTML=`<div class="notice">Melde dich mit deinem Supabase-Admin-Konto an.</div><div class="field"><label>E-Mail</label><input id="aEmail" type="email" autocomplete="email"></div><div class="field"><label>Passwort</label><input id="aPass" type="password" autocomplete="current-password"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" onclick="loginAdmin()">Anmelden</button><button class="btn ghost" type="button" onclick="sendPasswordReset()">Passwort vergessen?</button></div>`;return}
