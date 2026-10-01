@@ -465,7 +465,7 @@ async function placeOrder(){
  const order=data?.[0]||data;
  cart={};saveCart();renderCart();
  msg.innerHTML=`<div class="notice success"><b>Bestellung erfolgreich!</b><br>Bestellnummer: <b>${esc(order?.order_number||'erstellt')}</b><br><br>Bitte überweise den Rechnungsbetrag an:<br><b>${esc(settings.account_holder||'')}</b><br>${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><br>Verwendungszweck: <b>${esc(order?.order_number||'')}</b></div>`;
-}else{
+}
 async function openAdmin(){
  document.getElementById('admin').classList.add('open');
  const {data:{session}}=await sb.auth.getSession();renderAdmin(session);
