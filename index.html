@@ -250,19 +250,97 @@ body{
 </div>
 
 <div id="checkout" class="modal">
- <div class="modalbox">
-  <div class="row"><h2>Bestellung</h2><button class="btn ghost" type="button" onclick="closeCheckout()">×</button></div>
-  <div id="paymentInfo" class="notice"></div>
-  <div class="field"><label>Zahlungsart</label>
- 
+  <div class="modalbox checkoutbox">
+
+    <div class="row checkouthead">
+      <div>
+        <div class="checkouttitle">Bestellung abschließen</div>
+        <div class="checkoutsubtitle">Wähle deine gewünschte Zahlungsart und gib deine Lieferdaten ein.</div>
+      </div>
+      <button class="btn ghost checkoutclose" type="button" onclick="closeCheckout()">×</button>
+    </div>
+
+    <div id="paymentInfo" class="notice"></div>
+
+    <div class="field">
+      <label>Zahlungsart</label>
+
+      <div class="payopts">
+
+        <label class="payopt">
+          <input type="radio" name="paymethod" value="bank_transfer" checked onchange="updatePaymentUI()">
+          <span class="payicon">🏦</span>
+          <span class="paytext">
+            <b>Banküberweisung / Echtzeitüberweisung</b>
+            <small>Die Bankdaten werden erst nach erfolgreicher Bestellung angezeigt.</small>
+          </span>
+          <span class="paystatus available">Verfügbar</span>
+        </label>
+
+        <label class="payopt">
+          <input type="radio" name="paymethod" value="paypal" onchange="updatePaymentUI()">
+          <span class="payicon">🅿️</span>
+          <span class="paytext">
+            <b>PayPal</b>
+            <small>Bezahlung über PayPal.Me nach der Bestellung.</small>
+          </span>
+          <span class="paystatus available">Verfügbar</span>
+        </label>
+
+        <label class="payopt disabled">
+          <input type="radio" name="paymethod" value="card" disabled>
+          <span class="payicon">💳</span>
+          <span class="paytext">
+            <b>Kreditkarte / Debitkarte</b>
+            <small>Diese Zahlungsart ist derzeit noch nicht verfügbar.</small>
+          </span>
+          <span class="paystatus unavailable">Nicht verfügbar</span>
+        </label>
+
+        <label class="payopt disabled">
+          <input type="radio" name="paymethod" value="klarna" disabled>
+          <span class="payicon">🟣</span>
+          <span class="paytext">
+            <b>Klarna</b>
+            <small>Diese Zahlungsart ist derzeit noch nicht verfügbar.</small>
+          </span>
+          <span class="paystatus unavailable">Nicht verfügbar</span>
+        </label>
+
+      </div>
+    </div>
+
+    <div class="checkoutfields">
+
+      <div class="field">
+        <label for="cName">Name</label>
+        <input id="cName" type="text" placeholder="Vor- und Nachname">
+      </div>
+
+      <div class="field">
+        <label for="cEmail">E-Mail</label>
+        <input id="cEmail" type="email" placeholder="deine@email.de">
+      </div>
+
+      <div class="field">
+        <label for="cAddress">Lieferadresse</label>
+        <textarea id="cAddress" rows="3" placeholder="Straße, Hausnummer, PLZ, Ort"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="cNote">Notiz <span class="optional">(optional)</span></label>
+        <textarea id="cNote" rows="2" placeholder="Weitere Informationen zu deiner Bestellung"></textarea>
+      </div>
+
+    </div>
+
+    <button class="btn checkoutsubmit" type="button" onclick="placeOrder()">
+      Kostenpflichtig bestellen
+    </button>
+
+    <div id="checkoutMsg"></div>
+
   </div>
-  <div class="field"><label>Name</label><input id="cName"></div>
-  <div class="field"><label>E-Mail</label><input id="cEmail" type="email"></div>
-  <div class="field"><label>Lieferadresse</label><textarea id="cAddress" rows="3"></textarea></div>
-  <div class="field"><label>Notiz (optional)</label><textarea id="cNote" rows="2"></textarea></div>
-  <button class="btn" style="width:100%" type="button" onclick="placeOrder()">Kostenpflichtig bestellen</button>
-  <div id="checkoutMsg"></div>
- </div>
 </div>
 <div class="payopts">
 
