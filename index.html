@@ -431,18 +431,29 @@ function selectedPayment(){return document.querySelector('input[name="paymethod"
 function updatePaymentUI(){
  const method=selectedPayment();
  const info=document.getElementById('paymentInfo');
- info.innerHTML=`
-  <b>Banküberweisung / Echtzeitüberweisung</b><br>
-  <span style="color:#aaa;">
+
+ info.style.display='block';
+
+ if(method==='bank_transfer'){
+  info.innerHTML=`
+   <b>Banküberweisung / Echtzeitüberweisung</b><br>
+   <span style="color:#aaa;">
     Die Zahlungsdaten werden dir nach Abschluss der Bestellung angezeigt.
-  </span>
-`;
-  }else if(method==='paypal'){
-  info.style.display='block';
-  info.innerHTML='PayPal – Freunde & Familie.<br><a href="https://www.paypal.me/Demizki" target="_blank" rel="noopener noreferrer" style="color:#ff6a70;font-weight:800;">PayPal.Me öffnen</a><br><small>Bitte beachte die Zahlungsbedingungen von PayPal.</small>';
+   </span>
+  `;
+ }else if(method==='paypal'){
+  info.innerHTML=`
+   <b>PayPal</b><br>
+   <a href="https://www.paypal.me/Demizki" target="_blank" rel="noopener noreferrer" style="color:#ff6a70;font-weight:800;">
+    PayPal.Me öffnen
+   </a><br>
+   <small>Bitte beachte die Zahlungsbedingungen von PayPal.</small>
+  `;
  }else{
-  info.style.display='block';
-  info.innerHTML='Kartenzahlungen sind vorbereitet, aber noch nicht live verbunden. Bitte wähle aktuell Banküberweisung / Echtzeitüberweisung.';
+  info.innerHTML=`
+   Kartenzahlungen sind aktuell noch nicht verfügbar.
+   Bitte wähle Banküberweisung oder PayPal.
+  `;
  }
 }
 function openCheckout(){
