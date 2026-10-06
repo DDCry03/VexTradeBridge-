@@ -431,9 +431,12 @@ function selectedPayment(){return document.querySelector('input[name="paymethod"
 function updatePaymentUI(){
  const method=selectedPayment();
  const info=document.getElementById('paymentInfo');
- if(method==='bank_transfer'){
-  info.style.display='block';
-  info.innerHTML=`Zahlung per Überweisung / Echtzeitüberweisung.<br><b>Kontoinhaber:</b> ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br><b>Bank:</b> ${esc(settings.bank_name||'')}<br><b>IBAN:</b> ${esc(settings.iban||'Noch nicht hinterlegt')}<br><b>BIC:</b> ${esc(settings.bic||'')}<br><div style="margin-top:14px;padding:12px;border:1px solid #333;border-radius:8px;"><b>Hinweis:</b><br>VexTradeBridge wird derzeit als Einzelunternehmen von Daniel Demizki geführt. Daher erfolgt die Banküberweisung auf das Konto des Inhabers Daniel Demizki.</div><br>Nach dem Absenden erhältst du die Zahlungsdaten und die Bestellnummer.`;
+ info.innerHTML=`
+  <b>Banküberweisung / Echtzeitüberweisung</b><br>
+  <span style="color:#aaa;">
+    Die Zahlungsdaten werden dir nach Abschluss der Bestellung angezeigt.
+  </span>
+`;
   }else if(method==='paypal'){
   info.style.display='block';
   info.innerHTML='PayPal – Freunde & Familie.<br><a href="https://www.paypal.me/Demizki" target="_blank" rel="noopener noreferrer" style="color:#ff6a70;font-weight:800;">PayPal.Me öffnen</a><br><small>Bitte beachte die Zahlungsbedingungen von PayPal.</small>';
@@ -494,16 +497,40 @@ if(method==='paypal'){
     Vielen Dank für deine Bestellung!
   </div>`;
 }else{
-  msg.innerHTML=`<div class="notice success">
-    <b>Bestellung erfolgreich!</b><br>
-    Bestellnummer: <b>${esc(order?.order_number||'erstellt')}</b><br><br>
-    Bitte überweise den Rechnungsbetrag an:<br>
-    <b>${esc(settings.account_holder||'')}</b><br>
-    ${esc(settings.bank_name||'')}<br>
-    <b>IBAN:</b> ${esc(settings.iban||'')}<br>
-    <b>BIC:</b> ${esc(settings.bic||'')}<br><br>
-    Verwendungszweck: <b>${esc(order?.order_number||'')}</b>
-  </div>`;
+  msg.innerHTML=`
+    <div class="notice success">
+      <b>Bestellung erfolgreich!</b><br><br>
+
+      Bestellnummer:
+      <b>${esc(order?.order_number||'erstellt')}</b>
+
+      <br><br>
+
+      <b>Zahlung per Banküberweisung</b><br><br>
+
+      <b>Kontoinhaber:</b>
+      ${esc(settings.account_holder||'Noch nicht hinterlegt')}<br>
+
+      <b>Bank:</b>
+      ${esc(settings.bank_name||'')}<br>
+
+      <b>IBAN:</b>
+      ${esc(settings.iban||'Noch nicht hinterlegt')}<br>
+
+      <b>BIC:</b>
+      ${esc(settings.bic||'')}<br>
+
+      <div style="margin-top:14px;padding:12px;border:1px solid #333;border-radius:8px;">
+        <b>Wichtig:</b><br>
+        Bitte gib deine Bestellnummer
+        <b>${esc(order?.order_number||'')}</b>
+        als Verwendungszweck an.
+      </div>
+
+      <br>
+      Vielen Dank für deine Bestellung!
+    </div>
+  `;
 }
 }
  function openAdmin(){
