@@ -254,17 +254,7 @@ body{
   <div class="row"><h2>Bestellung</h2><button class="btn ghost" type="button" onclick="closeCheckout()">×</button></div>
   <div id="paymentInfo" class="notice"></div>
   <div class="field"><label>Zahlungsart</label>
-   <div class="payopts">
-    <label class="payopt"><input type="radio" name="paymethod" value="bank_transfer" checked onchange="updatePaymentUI()"><span>🏦 <b>Banküberweisung / Echtzeitüberweisung</b><small>Direkt auf das hinterlegte Bankkonto</small></span></label>
-   <label class="payopt">
-  <input type="radio" name="paymethod" value="paypal" onchange="updatePaymentUI()">
-  <span>
-    🅿️ <b>PayPal – Freunde & Familie</b>
-    <small>Über PayPal.Me bezahlen</small>
-  </span>
-</label>
-    <label class="payopt"><input type="radio" name="paymethod" value="card" onchange="updatePaymentUI()"><span>💳 <b>Kreditkarte / Debitkarte</b><small>Visa, Mastercard und unterstützte Karten</small></span></label>
-   </div>
+ 
   </div>
   <div class="field"><label>Name</label><input id="cName"></div>
   <div class="field"><label>E-Mail</label><input id="cEmail" type="email"></div>
@@ -274,7 +264,49 @@ body{
   <div id="checkoutMsg"></div>
  </div>
 </div>
+<div class="payopts">
 
+  <label class="payopt">
+    <input type="radio" name="paymethod" value="bank_transfer" checked onchange="updatePaymentUI()">
+    <span class="payicon">🏦</span>
+    <span class="paytext">
+      <b>Banküberweisung / Echtzeitüberweisung</b>
+      <small>Die Bankdaten werden nach der Bestellung angezeigt.</small>
+    </span>
+    <span class="paystatus available">Verfügbar</span>
+  </label>
+
+  <label class="payopt">
+    <input type="radio" name="paymethod" value="paypal" onchange="updatePaymentUI()">
+    <span class="payicon">🅿️</span>
+    <span class="paytext">
+      <b>PayPal</b>
+      <small>Bezahlung über PayPal</small>
+    </span>
+    <span class="paystatus available">Verfügbar</span>
+  </label>
+
+  <label class="payopt disabled">
+    <input type="radio" name="paymethod" value="card" disabled>
+    <span class="payicon">💳</span>
+    <span class="paytext">
+      <b>Kreditkarte / Debitkarte</b>
+      <small>Derzeit noch nicht verfügbar</small>
+    </span>
+    <span class="paystatus unavailable">Nicht verfügbar</span>
+  </label>
+
+  <label class="payopt disabled">
+    <input type="radio" name="paymethod" value="klarna" disabled>
+    <span class="payicon">🟣</span>
+    <span class="paytext">
+      <b>Klarna</b>
+      <small>Derzeit noch nicht verfügbar</small>
+    </span>
+    <span class="paystatus unavailable">Nicht verfügbar</span>
+  </label>
+
+</div>
 <div id="admin" class="modal">
  <div class="modalbox">
   <div class="row"><h2>VexTradeBridge Admin</h2><button class="btn ghost" type="button" onclick="closeAdmin()">×</button></div>
